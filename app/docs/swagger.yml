@@ -1,0 +1,39 @@
+swagger: '2.0'
+info:
+  title: Weather API
+  description: API to get weather data
+  verison: '1'
+paths:
+  /api/v1/weather:
+    get:
+      summary: Get current weather for a city
+      parameters:
+        - name: city
+          in: query
+          type: string
+          required: true
+          description: City name
+      responses:
+        200:
+          description: Current weather data
+        400:
+          description: Parameter city is required
+        404:
+          description: Unable to retrieve weather data
+
+  /api/v1/forecast:
+    get:
+      summary: Get forecast weather for a city
+      parameters:
+        - name: city
+          in: query
+          type: string
+          required: true
+          description: City name
+      responses:
+        200:
+          description: Forecast weather data
+        400:
+          description: Parameter city is required
+        404:
+          description: Unable to retrieve weather data
