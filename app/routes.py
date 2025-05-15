@@ -33,4 +33,4 @@ def forecast():
     if forecast_data:
         return forecast_data
     else:
-        return jsonify({"error": "Unable to obtain forecast data"}), 404
+        return jsonify({"error": "Unable to obtain weather forecast data"}), 404
