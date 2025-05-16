@@ -1,14 +1,9 @@
-import os
-from flask import Flask, jsonify, request
-from flask_cors import CORS
-from flasgger import Swagger
-from .services import get_current_weather, get_forecast_weather
+from flask import Blueprint,jsonify, request
+from app.services import get_current_weather, get_forecast_weather
 
-app = Flask(__name__)
-CORS(app)
-swagger = Swagger(app, template_file=os.path.join(os.path.dirname(__file__), 'docs/swagger.yml'))
+bp_main = Blueprint('main',__name__)
 
-@app.route('/api/v1/weather', methods=['GET'])
+@bp_main.route('/api/v1/weather', methods=['GET'])
 def weather():
     city = request.args.get('city')
 
@@ -22,7 +17,7 @@ def weather():
     else:
         return jsonify({"error": "Unable to obtain weather data"}), 404
 
-@app.route('/api/v1/forecast', methods=['GET'])
+@bp_main.route('/api/v1/forecast', methods=['GET'])
 def forecast():
     city = request.args.get('city')
     if not city:
