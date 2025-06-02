@@ -1,10 +1,10 @@
 from flask import Blueprint,request, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_jwt_extended import JWTManager, create_access_token
+from flask_jwt_extended import JWTManager,create_access_token
 from app.models import User
 
-bp_auth = Blueprint('auth', __name__)
 jwt_manager = JWTManager()
+bp_auth = Blueprint('auth', __name__)
 
 @bp_auth.route('/api/v1/auth/register', methods=['POST'])
 def register():
@@ -36,10 +36,6 @@ def login():
     elif not user or not check_password_hash(user.password,password):
         return jsonify({'msg': 'Credentials invalid'}), 401
     
-    access_token = create_access_token(identity={
-        'id':user.id,
-        'email': user.email,
-        'name':user.name
-    })
+    access_token = create_access_token(identity=str(user.id))
 
-    return jsonify(access_token), 200
+    return jsonify(access_token=access_token), 200

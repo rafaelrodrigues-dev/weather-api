@@ -3,7 +3,10 @@ from flask import Flask
 from flask_cors import CORS
 from flasgger import Swagger
 
+from dotenv import load_dotenv
+
 def create_app(config_path='config.py'):
+    load_dotenv()
     app = Flask(__name__)
     app.config.from_pyfile(config_path)
 
