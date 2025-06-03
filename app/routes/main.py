@@ -36,7 +36,7 @@ def forecast():
 @jwt_required()
 def me():
     current_user_id = get_jwt_identity()
-    user = User.query.get(current_user_id)
+    user = User.query.filter_by(id=current_user_id).first()
     user_data = {
         "id": user.id,
         "username": user.name,
