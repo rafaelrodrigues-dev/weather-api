@@ -6,7 +6,7 @@ def test_register_successful(client):
     # Test successful registration
     response = client.post('/api/v1/auth/register', json={
         'name': 'Test User',
-        'password': 'testpassword',
+        'password': 'Passw0rd',
         'email': 'test@email.com'
     })
     user = User.query.filter_by(email='test@email.com').first()
@@ -34,16 +34,37 @@ def test_register_email_exists(client):
 
     response = client.post('/api/v1/auth/register', json={
         'name': 'Test User',
-        'password': 'testpassword',
+        'password': 'Passw0rd',
         'email': 'test@email.com'
     })
 
     assert b'Email already exists' in response.data
     assert response.status_code == 400
 
+def test_register_invalid_email(client):
+    response = client.post('/api/v1/auth/register', json={
+        'name': 'Test User',
+        'password': 'Passw0rd',
+        'email': 'test@email@invalid.com'
+    })
+
+    assert b'Email is not valid' in response.data
+    assert response.status_code == 400
+
+def test_register_password_is_too_weak(client):
+    response = client.post('/api/v1/auth/register', json={
+        'name':'Test User',
+        'password': 'password',
+        'email': 'test@email.com'
+    })
+    
+    assert b'Password is too weak' in response.data
+    assert b'Password must be alphanumeric, one uppercase and one lowercase.' in response.data
+    assert response.status_code == 400
+
 def test_login_successful(client):
     # Test successful login
-    password = 'testpassword'
+    password = 'Passw0rd'
     hashed_password = generate_password_hash(password)
     # Create a user in the database
     User(name='Test User', password=hashed_password,email='test@email.com').create()
@@ -73,7 +94,7 @@ def test_login_invalid_credentials(client):
 
 def test_refresh_token_successful(client):
     # Test successful token refresh
-    password = 'testpassword'
+    password = 'Passw0rd'
     hashed_password = generate_password_hash(password)
     # Create a user in the database
     User(name='Test User',email='test@email.com', password=hashed_password).create()

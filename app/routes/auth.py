@@ -4,6 +4,7 @@ from flask_jwt_extended import (
     JWTManager, create_access_token, create_refresh_token, jwt_required, get_jwt_identity 
 )
 from app.models import User
+from app.validators import validate_email, validate_password
 
 jwt_manager = JWTManager()
 bp_auth = Blueprint('auth', __name__)
@@ -19,6 +20,15 @@ def register():
     
     if User.query.filter_by(email=email).first():
         return jsonify({'msg': 'Email already exists'}), 400
+    
+    if not validate_email(email):
+        return jsonify({'msg': 'Email is not valid'}), 400
+    
+    if not validate_password(password):
+        return jsonify({
+            'msg':'Password is too weak',
+            'obs':'Password must be alphanumeric, one uppercase and one lowercase.'
+        }), 400
     
     hashed_password = generate_password_hash(password)
     User(name=name, password=hashed_password, email=email).create()
