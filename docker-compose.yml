@@ -1,0 +1,11 @@
+version: '3.9'
+services:
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    networks:
+      - weather_network
+
+networks:
+  weather_network:
