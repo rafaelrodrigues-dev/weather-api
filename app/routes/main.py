@@ -10,7 +10,7 @@ bp_main = Blueprint('main',__name__)
 @jwt_required()
 def weather():
     city = request.args.get('city')
-
+    lang = request.args.get('lang', 'en')  # Default language is English
     if not city:
         return jsonify({"error": "Parameter city is required"}), 400
 
@@ -19,7 +19,7 @@ def weather():
     if cached_data:
          return json.loads(cached_data), 200
 
-    weather_data = get_current_weather(city)
+    weather_data = get_current_weather(city,lang)
 
     if weather_data:
         # Cache the weather data for 10 minutes
@@ -45,6 +45,7 @@ def weather():
 @jwt_required()
 def forecast():
     city = request.args.get('city')
+    lang = request.args.get('lang', 'en')  # Default language is English
     if not city:
         return jsonify({"error": "Parameter city is required"}), 400
     
@@ -53,7 +54,7 @@ def forecast():
     if cached_data:
         return json.loads(cached_data), 200
     
-    forecast_data = get_forecast_weather(city)
+    forecast_data = get_forecast_weather(city,lang)
 
     if forecast_data:
         # Cache the forecast data for 10 minutes
