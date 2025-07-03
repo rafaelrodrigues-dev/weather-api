@@ -49,24 +49,44 @@ def forecast():
 @bp_main.route('/api/v1/me',methods=['GET'])
 @jwt_required()
 def me():
-    # Page where the user can see their data and history
+    # Page where the user can see their data 
     current_user_id = get_jwt_identity()
     user = User.query.filter_by(id=current_user_id).first()
     user_data = {
-        "id": user.id,
-        "username": user.name,
-        "email": user.email,
-        "history": [
-            {
-                "city": weather_data.city,
-                "temperature": weather_data.temperature,
-                "feels_like": weather_data.feels_like,
-                "humidity": weather_data.humidity,
-                "description": weather_data.description,
-                "generated_at": weather_data.generated_at
-            }
-            for weather_data in user.history
-        ]
+        'id': user.id,
+        'name': user.name,
+        'email': user.email,
     }
 
     return jsonify(user_data), 200
+
+@bp_main.route('/api/v1/history', methods=['GET'])
+@jwt_required()
+def history():
+    # Page where the user can see their history
+    current_user_id = get_jwt_identity()
+    user = User.query.filter_by(id=current_user_id).first()
+
+    # Paginate the user's history
+    page = request.args.get('page', 1, type=int)
+    per_page = request.args.get('per_page',10, type=int)
+    paginated_history = user.history.paginate(page=page, per_page=per_page, error_out=False)
+    history_items = [
+        {
+            'city': weather_data.city,
+            'temperature': weather_data.temperature,
+            'feels_like': weather_data.feels_like,
+            'humidity': weather_data.humidity,
+            'description': weather_data.description,
+            'generated_at': weather_data.generated_at
+        }
+        for weather_data in paginated_history.items
+    ]
+    history_data = {
+        'history': history_items,
+        'total': paginated_history.total,
+        'pages': paginated_history.pages,
+        'current_page':paginated_history.page,
+    }
+
+    return jsonify(history_data), 200

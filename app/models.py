@@ -28,7 +28,7 @@ class Weather(db.Model):
         nullable=False
     )
 
-    user = db.relationship('User',backref=db.backref('history', lazy=True))
+    user = db.relationship('User',backref=db.backref('history', lazy='dynamic'))
 
     def create(self):
         db.session.add(self)
