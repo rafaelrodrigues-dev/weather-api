@@ -1,8 +1,8 @@
-FROM python:3.13-alpine
+FROM python:3.13-alpine3.21
 
-COPY requirements.txt /requirements.txt
+ENV PYTHONDONTWRITEBYTECODE=1
 
-RUN pip install --no-cache-dir -r /requirements.txt
+ENV PYTHONUNBUFFERED=1
 
 COPY . /api
 
@@ -10,4 +10,11 @@ WORKDIR /api
 
 EXPOSE 5000
 
-CMD ["gunicorn","-b", "0.0.0.0:5000","app.wsgi:app"]
+RUN apk update && \
+    apk upgrade && \
+    pip install --upgrade pip && \
+    pip install -r /api/requirements.txt && \
+    chmod +x /api/entrypoint.sh
+
+    
+CMD [ "./entrypoint.sh"]

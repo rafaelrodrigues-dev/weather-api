@@ -3,6 +3,11 @@ Dockerfile
 .DS_Store
 .gitignore
 .dockerignore
+docker-compose.yml
+docker-swarm.yml
+LICENSE
+README.md
+nginx.conf
 
 /credentials
 /cache
