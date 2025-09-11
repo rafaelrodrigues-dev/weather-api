@@ -9,7 +9,6 @@ done
 
 echo "✅ Postgres Database Started Successfully ($POSTGRES_HOST:$POSTGRES_PORT)"
 
-flask db migrate
 flask db upgrade
 
 gunicorn -b 0.0.0.0:5000 app.wsgi:app
