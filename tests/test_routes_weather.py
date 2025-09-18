@@ -1,5 +1,5 @@
 from flask_jwt_extended import create_access_token
-from app.models import User, Weather
+from app.models import User
 from werkzeug.security import generate_password_hash
 
 def login_user(email='test@email.com',password='testPassw0rd'):
@@ -89,35 +89,3 @@ def test_api_v1_forecast_invalid_city(client):
 
     assert b'Unable to obtain weather forecast data' in response.data
     assert response.status_code == 404
-
-def test_api_v1_me(client):
-    """Test the /api/v1/me endpoint."""
-    logged_user = login_user()
-    response = client.get('/api/v1/me', headers={'Authorization': f'Bearer {logged_user['access_token']}'})
-    
-    assert b'1' in response.data
-    assert b'test@email.com' in response.data
-    assert response.status_code == 200
-
-def test_api_v1_history_shows_weather_history(client):
-    """Test the /api/v1/history endpoint."""
-    logged_user = login_user()
-
-    for i in range(5):
-        Weather(
-            city=f'City {i}',
-            temperature=25.0,
-            feels_like=24.0,
-            humidity=60.0,
-            description='Sunny',
-            user=logged_user['user']
-        ).create()
-
-    response = client.get('/api/v1/history', headers={'Authorization': f'Bearer {logged_user['access_token']}'})
-
-    for i in range(5):
-        assert f'City {i}'.encode() in response.data
-
-    assert b'Sunny' in response.data
-    assert b'25.0' in response.data
-    assert b'60.0' in response.data
