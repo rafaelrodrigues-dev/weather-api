@@ -9,7 +9,7 @@ from app.validators import validate_email, validate_password
 
 ns_auth = Namespace('Auth', description='Authentication operations')
 
-register_model = ns_auth.model('User', {
+register_model = ns_auth.model('Register_User', {
     'name': fields.String(required=True, description='The user name'),
     'email': fields.String(required=True, description='The user email'),
     'password': fields.String(required=True, description='The user password')
@@ -21,6 +21,8 @@ login_model = ns_auth.model('Login', {
 })
 
 @ns_auth.route('/register')
+@ns_auth.response(400, 'Validation Error')
+@ns_auth.response(201, 'User created successfully')
 class RegisterResource(Resource):
     @ns_auth.doc('Register a new user',security=None)
     @ns_auth.expect(register_model)
@@ -50,6 +52,9 @@ class RegisterResource(Resource):
         return {'msg': 'User created successfully'}, 201
 
 @ns_auth.route('/login')
+@ns_auth.response(400, 'Validation Error')
+@ns_auth.response(401, 'Credentials invalid')
+@ns_auth.response(200, 'Login successful')
 class LoginResource(Resource):
     @ns_auth.doc('User login to obtain JWT tokens',security=None)
     @ns_auth.expect(login_model)
