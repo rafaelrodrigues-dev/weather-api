@@ -14,17 +14,23 @@ update_user_model = ns_user.model('UpdateUser', {
 
 @ns_user.route('/')
 class MeResource(Resource):
-    method_decorators = [jwt_required()]
+    decorators = [jwt_required()]
+
+    def dispatch_request(self, *args, **kwargs):
+        current_user_id = get_jwt_identity()
+        self.user = User.query.filter_by(id=current_user_id).first()
+
+        if not self.user:
+            ns_user.abort(404,'User not found')
+    
+        return super().dispatch_request(*args, **kwargs)
 
     @ns_user.doc('Get the information of the user logged in')
     def get(self):
-        current_user_id = get_jwt_identity()
-        user = User.query.get(current_user_id)
-
         data = {
-            'id': user.id,
-            'name':user.name,
-            'email':user.email
+            'id': self.user.id,
+            'name': self.user.name,
+            'email': self.user.email
         }
 
         return {'user': data}, 200
@@ -34,19 +40,24 @@ class MeResource(Resource):
     @ns_user.response(200, 'User updated')
     @ns_user.response(400, 'Invalid input')
     def patch(self):
-        current_user_id = get_jwt_identity()
-        user = User.query.get(current_user_id)
+        data = ns_user.payload
+        if not data:
+            return {'msg': 'No data provided to update'}, 400
 
-        data = user.payload
         name = data.get('name')
         email = data.get('email')
         password = data.get('password')
+
+        updated = False
+
         if name:
-            user.name = name
+            self.user.name = name
+            updated = True
         if email:
             if not validate_email(email):
                 return {'msg': 'Invalid email format'}, 400
-            user.email = email
+            self.user.email = email
+            updated = True
         if password:
             if not validate_password(password):
                 return {
@@ -54,18 +65,19 @@ class MeResource(Resource):
                 'obs':'Password must be alphanumeric, one uppercase and one lowercase.'
             }, 400
 
-            user.password = generate_password_hash(password)
-        else:
-            return {'msg': 'No data provided to update'}, 400
+            self.user.password = generate_password_hash(password)
+            updated = True
 
-        user.update()
+        if not updated:
+            return {'msg': 'No valid data provided to update'}, 400
+
+        self.user.update()
 
         return {'msg': 'User updated'}, 200
 
     @ns_user.doc('Delete the user logged in')
     @ns_user.response(204, 'User deleted')
     def delete(self):
-        current_user_id = get_jwt_identity()
-        User.query.filter_by(id=current_user_id).delete()
+        self.user.delete()
 
-        return {'msg': 'User deleted'}, 204
+        return '', 204

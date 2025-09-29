@@ -1,21 +1,5 @@
-from flask_jwt_extended import create_access_token
-from app.models import User
-from werkzeug.security import generate_password_hash
+from tests.utils import login_user
 
-def login_user(email='test@email.com',password='testPassw0rd'):
-    # Create a user in the database
-    hashed_password = generate_password_hash(password)
-    User(name='Test User', password=hashed_password,email=email).create()
-    user = User.query.filter_by(email=email).first()
-
-    # Create an access token for the user
-    access_token = create_access_token(identity=str(user.id))
-
-    # Return the user and access token
-    return {
-        'user': user,
-        'access_token': access_token
-    }
 
 def test_api_v1_weather(client):
     """Test the /api/v1/weather endpoint."""

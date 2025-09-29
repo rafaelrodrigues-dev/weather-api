@@ -55,6 +55,7 @@ class ForecastResource(Resource):
         forecast_data = get_forecast_weather(city,lang)
 
         if forecast_data:
+            current_app.redis.setex(cache_key, 600, json.dumps(forecast_data))
             return forecast_data
         else:
             return {'msg': 'Unable to obtain weather forecast data'}, 404
