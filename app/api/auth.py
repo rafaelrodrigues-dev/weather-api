@@ -20,6 +20,11 @@ login_model = ns_auth.model('Login', {
     'password': fields.String(required=True, description='The user password')
 })
 
+token_model = ns_auth.model('Token', {
+    'access_token': fields.String(description='Access token'),
+    'refresh_token': fields.String(description='Refresh token'),
+})
+
 @ns_auth.route('/register')
 @ns_auth.response(400, 'Validation Error')
 @ns_auth.response(201, 'User created successfully')
@@ -54,7 +59,7 @@ class RegisterResource(Resource):
 @ns_auth.route('/login')
 @ns_auth.response(400, 'Validation Error')
 @ns_auth.response(401, 'Credentials invalid')
-@ns_auth.response(200, 'Login successful')
+@ns_auth.response(200, 'Login successful', token_model)
 class LoginResource(Resource):
     @ns_auth.doc('User login to obtain JWT tokens',security=None)
     @ns_auth.expect(login_model)

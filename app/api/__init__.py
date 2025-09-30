@@ -15,13 +15,21 @@ authorizations = {
     }
 }
 
+description = """
+This is a simple API that retrieves current and forecast weather data.
+The data is retrieved from the OpenWeatherMap Database.
+https://openweathermap.org/
+"""
+
 api = Api(
     bp,
     version='1.0', 
     title='Weather API',
-    description='A simple API to get weather data',
+    description=description,
     authorizations=authorizations,
-    security='jwt'
+    security='jwt',
+    contact='Rafael Rodrigues Github',
+    contact_url='https://github.com/rafaelrodrigues-dev',
 )
 
 api.add_namespace(ns, path='/api/v1')

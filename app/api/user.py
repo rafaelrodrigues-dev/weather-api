@@ -12,6 +12,16 @@ update_user_model = ns_user.model('UpdateUser', {
     'password': fields.String(required=False, description='The password of the user')
 })
 
+user_info_model = ns_user.model('UserInfo', {
+    'id': fields.Integer(description='The user identifier'),
+    'name': fields.String(description='The name of the user'),
+    'email': fields.String(description='The email of the user')
+})
+
+user_model = ns_user.model('User', {
+    'user': fields.Nested(user_info_model)
+})
+
 @ns_user.route('/')
 class MeResource(Resource):
     decorators = [jwt_required()]
@@ -26,6 +36,7 @@ class MeResource(Resource):
         return super().dispatch_request(*args, **kwargs)
 
     @ns_user.doc('Get the information of the user logged in')
+    @ns_user.marshal_with(user_model)
     def get(self):
         data = {
             'id': self.user.id,
