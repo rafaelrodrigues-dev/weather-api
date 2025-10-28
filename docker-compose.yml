@@ -8,11 +8,7 @@ services:
       - db_weather_data:/var/lib/postgresql/data
     networks:
       - weather_network
-    
-  redis:
-    image: redis:latest
-    networks:
-      - weather_network
+
   web:
     build:
       context: .
@@ -21,7 +17,6 @@ services:
     volumes:
       - .:/api
     depends_on:
-      - redis
       - db
     env_file:
       - ./.env
