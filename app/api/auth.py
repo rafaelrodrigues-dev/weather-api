@@ -7,7 +7,7 @@ from flask_jwt_extended import (
 from app.models import User
 from app.validators import validate_email, validate_password
 
-ns_auth = Namespace('Auth', description='Authentication operations')
+ns_auth = Namespace('Auth', description='Authentication operations', path='/api/v1/auth')
 
 register_model = ns_auth.model('Register_User', {
     'name': fields.String(required=True, description='The user name'),

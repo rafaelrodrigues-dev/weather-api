@@ -4,7 +4,7 @@ from werkzeug.security import generate_password_hash
 from app.models import User
 from app.validators import validate_email, validate_password
 
-ns_user = Namespace('User', description='User related operations')
+ns_user = Namespace('User', description='User related operations', path='/api/v1/me')
 
 update_user_model = ns_user.model('UpdateUser', {
     'name': fields.String(required=False, description='The name of the user'),
