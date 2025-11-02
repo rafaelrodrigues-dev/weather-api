@@ -12,6 +12,8 @@ ns = Namespace('Weather', description='Weather operations', path='/api/v1')
 @ns.param('city', 'name of the city', required=True)
 @ns.param('lang', 'language code for the response', required=False, default='en')
 @ns.response(404, 'City not found')
+@ns.response(400, 'Bad Request')
+@ns.response(401, 'Unauthorized')
 class WeatherResource(Resource):
     method_decorators = [jwt_required()]
     def dispatch_request(self, *args, **kwargs):
@@ -46,6 +48,9 @@ class WeatherResource(Resource):
 @ns.route('/forecast')
 @ns.param('city', 'name of the city', required=True)
 @ns.param('lang', 'language code for the response', required=False, default='en')
+@ns.response(404, 'City not found')
+@ns.response(400, 'Bad Request')
+@ns.response(401, 'Unauthorized')
 class ForecastResource(Resource):
     method_decorators = [jwt_required()]
 

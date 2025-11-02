@@ -23,6 +23,8 @@ user_model = ns_user.model('User', {
 })
 
 @ns_user.route('/')
+@ns_user.response(404, 'User not found')
+@ns_user.response(401, 'Unauthorized')
 class MeResource(Resource):
     decorators = [jwt_required()]
 
@@ -48,7 +50,7 @@ class MeResource(Resource):
     
     @ns_user.doc('Update the information of the user logged in') 
     @ns_user.expect(update_user_model)
-    @ns_user.response(200, 'User updated')
+    @ns_user.response(201, 'User updated')
     @ns_user.response(400, 'Invalid input')
     def patch(self):
         data = ns_user.payload
@@ -84,11 +86,10 @@ class MeResource(Resource):
 
         self.user.update()
 
-        return {'msg': 'User updated'}, 200
+        return {'msg': 'User updated'}, 201
 
     @ns_user.doc('Delete the user logged in')
     @ns_user.response(204, 'User deleted')
     def delete(self):
         self.user.delete()
-
         return '', 204

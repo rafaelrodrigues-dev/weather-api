@@ -1,13 +1,15 @@
 from flask import request
 from flask_restx import Resource, Namespace
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from app.models import User, Weather
+from app.models import db, User, Weather
 ns_history = Namespace('History', description='User weather query history operations', path='/api/v1/history')
 
 @ns_history.route('/')
+@ns_history.response(404, 'User not found')
+@ns_history.response(401, 'Unauthorized')
 class WeatherHistoryResource(Resource):
     decorators = [jwt_required()]
-    @ns_history.doc('Get weather query history for the user logged in')
+
     def dispatch_request(self, *args, **kwargs):
         self.user_id = get_jwt_identity()
         user = User.query.get(self.user_id)
@@ -29,5 +31,11 @@ class WeatherHistoryResource(Resource):
             'calls': calls,
             'page': pagination.page,
             'pages': pagination.pages,
-            'total':pagination.total
+            'total': pagination.total
         }
+    @ns_history.doc('Delete all weather query history for the user logged in')
+    @ns_history.response(204, 'History deleted')
+    def delete(self):
+        Weather.query.filter_by(user_id=self.user_id).delete(synchronize_session=False)
+        db.session.commit()
+        return '', 204
