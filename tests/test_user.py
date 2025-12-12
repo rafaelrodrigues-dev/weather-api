@@ -53,7 +53,7 @@ def test_update_user_name(client):
     }
     payload = {'name': 'Updated Test User'}
     response = client.patch('/api/v1/me/', headers=headers, data=json.dumps(payload))
-    assert response.status_code == 200
+    assert response.status_code == 201
     data = json.loads(response.data)
     assert data['msg'] == 'User updated'
     
@@ -71,7 +71,7 @@ def test_update_user_email(client):
     }
     payload = {'email': 'newemail@example.com'}
     response = client.patch('/api/v1/me/', headers=headers, data=json.dumps(payload))
-    assert response.status_code == 200
+    assert response.status_code == 201
     
     user = User.query.filter_by(id=user_logged['user'].id).first()
     assert user.email == 'newemail@example.com'
@@ -88,7 +88,7 @@ def test_update_user_password(client):
     new_password = 'NewSecurePassword123'
     payload = {'password': new_password}
     response = client.patch('/api/v1/me/', headers=headers, data=json.dumps(payload))
-    assert response.status_code == 200
+    assert response.status_code == 201
     
     user = User.query.filter_by(id=user_logged['user'].id).first()
     assert check_password_hash(user.password, new_password)

@@ -2,7 +2,7 @@ from werkzeug.security import generate_password_hash
 from flask_jwt_extended import create_access_token
 from app.models import User
 
-def login_user(email='test@email.com',password='testPassw0rd'):
+def login_user(email: str = 'test@email.com',password : str = 'testPassw0rd'):
     """"The function creates a user and returns the user object along with an access token."""
     # Create a user in the database
     hashed_password = generate_password_hash(password)
