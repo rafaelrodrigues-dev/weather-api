@@ -1,0 +1,27 @@
+version: '3.9'
+services:
+  db:
+    image: postgres:latest
+    env_file:
+      - ./.env
+    volumes:
+      - db_weather_data:/var/lib/postgresql/data
+    networks:
+      - weather_network
+
+  web:
+    image: rafaelrodriguess/weather-api:latest
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
+    env_file:
+      - ./.env
+    networks:
+      - weather_network
+
+volumes:
+  db_weather_data:
+
+networks:
+  weather_network:
