@@ -1,14 +1,5 @@
 #!/bin/sh
 
-set -e
+su-exec fuser flask db upgrade
 
-while ! nc -z $POSTGRES_HOST $POSTGRES_PORT; do
-  echo "🟡 Waiting for Postgres Database Startup ($POSTGRES_HOST $POSTGRES_PORT) ..."
-  sleep 2
-done
-
-echo "✅ Postgres Database Started Successfully ($POSTGRES_HOST:$POSTGRES_PORT)"
-
-flask db upgrade
-
-gunicorn -b 0.0.0.0:5000 app.wsgi:app
+exec su-exec fuser gunicorn -b 0.0.0.0:5000 app.wsgi:app

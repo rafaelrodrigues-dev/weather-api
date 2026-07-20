@@ -1,4 +1,4 @@
-FROM python:3.13-alpine3.21
+FROM python:3.13-alpine
 
 ENV PYTHONDONTWRITEBYTECODE=1
 
@@ -14,7 +14,9 @@ RUN apk update && \
     apk upgrade && \
     pip install --upgrade pip && \
     pip install -r /api/requirements.txt && \
+    apk add --no-cache su-exec && \
+    adduser --disabled-password --no-create-home fuser && \
     chmod +x /api/entrypoint.sh
 
-    
+
 CMD [ "./entrypoint.sh"]
