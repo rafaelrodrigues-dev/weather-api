@@ -16,7 +16,7 @@ services:
     ports:
       - "5000:5000"
     volumes:
-      - .:/api
+      - ./src:/app/src
     depends_on:
       - db
     env_file:

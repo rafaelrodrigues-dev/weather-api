@@ -1,22 +1,25 @@
 FROM python:3.13-alpine
 
 ENV PYTHONDONTWRITEBYTECODE=1
-
 ENV PYTHONUNBUFFERED=1
 
-COPY . /api
+WORKDIR /app
 
-WORKDIR /api
-
-EXPOSE 5000
+COPY pyproject.toml .
 
 RUN apk update && \
     apk upgrade && \
-    pip install --upgrade pip && \
-    pip install -r /api/requirements.txt && \
     apk add --no-cache su-exec && \
-    adduser --disabled-password --no-create-home fuser && \
-    chmod +x /api/entrypoint.sh
+    rm -rf /var/cache/apk/* && \
+    pip install --no-cache-dir --upgrade pip && \
+    adduser --disabled-password --no-create-home fuser
 
+COPY src ./src
+COPY entrypoint.sh .
 
-CMD [ "./entrypoint.sh"]
+RUN pip install --no-cache-dir -e . && \
+    chmod +x /app/entrypoint.sh
+
+EXPOSE 5000
+
+CMD ["./entrypoint.sh"]
