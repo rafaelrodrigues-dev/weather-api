@@ -75,7 +75,7 @@ class MeResource(Resource):
             if not validate_password(password):
                 return {
                 'msg':'Password is too weak',
-                'obs':'Password must be alphanumeric, one uppercase and one lowercase.'
+                'obs':'The password must contain at least 8 characters, one uppercase letter, one lowercase letter and one number.'
             }, 400
 
             self.user.password = generate_password_hash(password)

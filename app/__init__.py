@@ -11,7 +11,10 @@ def create_app(config_path='config.py'):
     app = Flask(__name__)
     app.config.from_pyfile(config_path)
 
-    app.redis = redis.Redis.from_url(os.getenv('REDIS_URL'))
+    if os.getenv('REDIS_URL'):
+        app.redis = redis.Redis.from_url(os.getenv('REDIS_URL'))
+    else:
+        app.redis = None
 
     CORS(app)
     JWTManager(app)

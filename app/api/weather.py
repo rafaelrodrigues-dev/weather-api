@@ -16,8 +16,6 @@ ns = Namespace('Weather', description='Weather operations', path='/api/v1')
 @ns.response(401, 'Unauthorized')
 class WeatherResource(Resource):
     method_decorators = [jwt_required()]
-    def dispatch_request(self, *args, **kwargs):
-        return super().dispatch_request(*args, **kwargs)
 
     @ns.doc('Get current weather data for a city')
     def get(self):
@@ -29,7 +27,7 @@ class WeatherResource(Resource):
         self.user_id = get_jwt_identity()
         
         cache_key = f'weather:{city.lower()}'
-        cached_data = current_app.redis.get(cache_key)
+        cached_data = current_app.redis.get(cache_key) if getattr(current_app, 'redis', None) else None
         if cached_data:
             weather_data = json.loads(cached_data)
             Weather(data=weather_data, user_id=self.user_id, timestamp=datetime.now()).create()
@@ -39,7 +37,8 @@ class WeatherResource(Resource):
 
         if weather_data:
             # Cache the weather data for 10 minutes
-            current_app.redis.setex(cache_key, 600, json.dumps(weather_data))
+            if getattr(current_app, 'redis', None):
+                current_app.redis.setex(cache_key, 600, json.dumps(weather_data))
             Weather(data=weather_data, user_id=self.user_id, timestamp=datetime.now()).create()
             return weather_data
         else:
@@ -62,14 +61,15 @@ class ForecastResource(Resource):
             return {'msg': 'Parameter city is required'}, 400
         
         cache_key= f'forecast:{city.lower()}'
-        cached_data = current_app.redis.get(cache_key)
+        cached_data = current_app.redis.get(cache_key) if getattr(current_app, 'redis', None) else None
         if cached_data:
             return json.loads(cached_data), 200
 
         forecast_data = get_forecast_weather(city,lang)
 
         if forecast_data:
-            current_app.redis.setex(cache_key, 600, json.dumps(forecast_data))
+            if getattr(current_app, 'redis', None):
+                current_app.redis.setex(cache_key, 600, json.dumps(forecast_data))
             return forecast_data
         else:
             return {'msg': 'Unable to obtain weather forecast data'}, 404
