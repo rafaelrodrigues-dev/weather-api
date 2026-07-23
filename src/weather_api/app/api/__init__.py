@@ -12,14 +12,12 @@ authorizations = {
         'type':'apiKey',
         'in': 'header',
         'name': 'Authorization',
-        'description': "Type 'Bearer \<token>' in this field"
+        'description': r"Type 'Bearer \<token>' in this field"
     }
 }
 
 description = """
-This is a simple API that retrieves current and forecast weather data.
-The data is retrieved from the OpenWeatherMap Database.
-https://openweathermap.org/
+An API that retrieves current and forecast weather data.
 """
 
 api = Api(

@@ -9,10 +9,17 @@ def test_api_v1_weather(client):
         query_string={'city': 'belo horizonte'},
         headers={'Authorization': f'Bearer {logged_user['access_token']}'}
     )
-    assert b'weather' in response.data
-    assert b'temp' in response.data
+    assert b'areaName' in response.data
+    assert b'observation_time' in response.data
+    assert b'temp_C' in response.data
+    assert b'FeelsLikeC' in response.data
+    assert b'weatherDesc' in response.data
     assert b'humidity' in response.data
-    assert b'description' in response.data
+    assert b'precipMM' in response.data
+    assert b'uvIndex' in response.data
+    assert b'windspeedKmph' in response.data
+    assert b'winddir16Point' in response.data
+    assert b'weatherIconUrl' in response.data
     assert response.status_code == 200
 
 def test_api_v1_weather_no_city(client):
@@ -72,10 +79,16 @@ def test_api_v1_forecast(client):
         query_string={'city': 'belo horizonte'},
         headers={'Authorization': f'Bearer {logged_user['access_token']}'}
     )
-    assert b'weather' in response.data
-    assert b'temp' in response.data
-    assert b'humidity' in response.data
-    assert b'description' in response.data
+    assert b'areaName' in response.data
+    assert b'date' in response.data
+    assert b'avgtempC' in response.data
+    assert b'mintempC' in response.data
+    assert b'maxtempC' in response.data
+    assert b'uvIndex' in response.data
+    assert b'sunrise' in response.data
+    assert b'sunset' in response.data
+    assert b'hourly' in response.data
+
     assert response.status_code == 200
 
 def test_api_v1_forecast_no_city(client):
