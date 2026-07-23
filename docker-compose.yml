@@ -23,7 +23,7 @@ services:
       - ./.env
     networks:
       - weather_network
-    command: ["python", "run.py"]
+    command: ["python", "src/weather_api/run.py"]
 
 volumes:
   db_weather_data:
